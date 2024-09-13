@@ -52,5 +52,5 @@ public @interface SubscribeEvent {
      *
      * @return the priority of the event listener, defaulting to {@link StandardPriorities#NORMAL}
      */
-    int priority() default StandardPriorities.NORMAL;
+    int priority() default 0;
 }
