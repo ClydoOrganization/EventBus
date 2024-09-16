@@ -70,7 +70,7 @@ public class SubscriberRegistry {
      */
     public void register(Object listener) {
         if (listener == null) {
-            LOGGER.error("You must provide a non-null listener");
+            LOGGER.error("", new NullPointerException("You must provide a non-null listener"));
             return;
         }
 
@@ -98,7 +98,7 @@ public class SubscriberRegistry {
      */
     public void unregister(Object listener) {
         if (listener == null) {
-            LOGGER.error("You must provide a non-null listener");
+            LOGGER.error("", new NullPointerException("You must provide a non-null listener"));
             return;
         }
 
