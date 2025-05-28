@@ -8,14 +8,14 @@
  *
  * EventBus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with EventBus.  If not, see
+ * along with EventBus. If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2024 ClydoNetwork
+ * Copyright (C) 2024-2025 ClydoNetwork
  */
 
 package net.clydo.eventbus;
@@ -69,14 +69,11 @@ public class SubscriberRegistry {
      * @param listener the listener object to be registered
      */
     public void register(Object listener) {
-        if (listener == null) {
-            LOGGER.error("", new NullPointerException("You must provide a non-null listener"));
-            return;
-        }
+        Objects.requireNonNull(listener, "You must provide a non-null listener");
 
         val clazz = listener.getClass();
         if (this.registeredClasses.contains(clazz)) {
-            LOGGER.error("You are already registered to {}", clazz.getName());
+            LOGGER.debug("You are already registered to {}", clazz);
             return;
         }
         this.registeredClasses.add(clazz);
@@ -97,10 +94,7 @@ public class SubscriberRegistry {
      * @param listener the listener object to be unregistered
      */
     public void unregister(Object listener) {
-        if (listener == null) {
-            LOGGER.error("", new NullPointerException("You must provide a non-null listener"));
-            return;
-        }
+        Objects.requireNonNull(listener, "You must provide a non-null listener");
 
         val clazz = listener.getClass();
         this.registeredClasses.remove(clazz);
