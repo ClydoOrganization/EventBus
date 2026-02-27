@@ -6,29 +6,35 @@ plugins {
 group = "net.clydo.eventbus"
 version = "1.0.0"
 
-val javaVersion = 17
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
-java.sourceCompatibility = JavaVersion.toVersion(javaVersion)
-java.targetCompatibility = JavaVersion.toVersion(javaVersion)
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    withSourcesJar()
+    withJavadocJar()
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
+    listOf(
+        "org.projectlombok:lombok:1.18.42",
+        "org.jetbrains:annotations:26.1.0"
+    ).forEach {
+        compileOnly(it)
+        annotationProcessor(it)
+    }
 
-    compileOnly("org.jetbrains:annotations:26.0.2")
-
-    implementation("org.slf4j:slf4j-api:2.0.17")
-    implementation("com.google.guava:guava:33.4.8-jre")
+    implementation("com.google.guava:guava:33.5.0-jre")
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
+tasks.javadoc {
+    options.encoding = "UTF-8"
+}
+
+tasks.wrapper {
+    gradleVersion = "9.0.0"
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 publishing {
@@ -37,9 +43,4 @@ publishing {
             from(components["java"])
         }
     }
-}
-
-tasks.withType<Wrapper> {
-    gradleVersion = "8.13"
-    distributionType = Wrapper.DistributionType.ALL
 }

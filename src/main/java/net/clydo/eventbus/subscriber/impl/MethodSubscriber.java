@@ -27,8 +27,6 @@ import lombok.val;
 import net.clydo.eventbus.exception.InvokeEventException;
 import net.clydo.eventbus.subscriber.EventSubscriber;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,11 +39,6 @@ import java.lang.reflect.Method;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 public class MethodSubscriber extends EventSubscriber {
-
-    /**
-     * Logger for logging errors during method invocation.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodSubscriber.class);
 
     /**
      * The object on which the method will be invoked.
@@ -79,23 +72,20 @@ public class MethodSubscriber extends EventSubscriber {
      * @param event the event to be passed to the method
      */
     @Override
-    public void call(Object event) {
+    public void call(Object event) throws InvokeEventException {
         try {
-            try {
-                this.method.invoke(this.listener, Preconditions.checkNotNull(event, "Event must not be null"));
-            } catch (IllegalArgumentException e) {
-                throw new InvokeEventException("Invalid argument passed to method: " + method, e);
-            } catch (IllegalAccessException e) {
-                throw new InvokeEventException("Method access failure: Unable to access method '" + method + "'", e);
-            } catch (InvocationTargetException e) {
-                val cause = e.getCause();
-                if (cause instanceof Error error) {
-                    throw new InvokeEventException("Error occurred during method invocation: " + method, error);
-                }
-                throw new InvokeEventException("Exception thrown by method: " + method, cause);
+            this.method.invoke(this.listener, Preconditions.checkNotNull(event, "Event must not be null"));
+        } catch (IllegalArgumentException e) {
+            throw new InvokeEventException("Invalid argument passed to method: " + method, e);
+        } catch (IllegalAccessException e) {
+            throw new InvokeEventException("Method access failure: Unable to access method '" + method + "'", e);
+        } catch (InvocationTargetException e) {
+            val cause = e.getCause();
+            if (cause instanceof Error error) {
+                // throw new InvokeEventException("Error occurred during method invocation: " + method, error);
+                throw error; // throw JVM Errors directly
             }
-        } catch (InvokeEventException e) {
-            LOGGER.error("Failed to invoke method: {}", method, e);
+            throw new InvokeEventException("Exception thrown by method: " + method, cause);
         }
     }
 }

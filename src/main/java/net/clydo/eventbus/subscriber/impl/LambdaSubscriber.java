@@ -21,6 +21,7 @@
 package net.clydo.eventbus.subscriber.impl;
 
 import lombok.EqualsAndHashCode;
+import net.clydo.eventbus.exception.InvokeEventException;
 import net.clydo.eventbus.subscriber.EventCaller;
 import net.clydo.eventbus.subscriber.EventSubscriber;
 import org.jetbrains.annotations.NotNull;
@@ -63,7 +64,7 @@ public class LambdaSubscriber<E> extends EventSubscriber {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void call(Object event) {
+    public void call(Object event) throws InvokeEventException {
         this.caller.call((E) event);
     }
 }

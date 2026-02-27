@@ -28,8 +28,6 @@ import net.clydo.eventbus.subscriber.EventSubscriber;
 import net.clydo.eventbus.subscriber.impl.MethodSubscriber;
 import net.clydo.eventbus.util.MethodSubscriberUtil;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
@@ -45,11 +43,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * sorted by priority.</p>
  */
 public class SubscriberRegistry {
-
-    /**
-     * Logger for logging errors and information related to subscriber management.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriberRegistry.class);
 
     /**
      * A map of event types to lists of subscribers.
@@ -73,16 +66,17 @@ public class SubscriberRegistry {
 
         val clazz = listener.getClass();
         if (this.registeredClasses.contains(clazz)) {
-            LOGGER.debug("You are already registered to {}", clazz);
-            return;
+            throw new IllegalStateException("Listener of class " + clazz + " is already registered");
         }
         this.registeredClasses.add(clazz);
 
         val methodSubscribers = MethodSubscriberUtil.createMethodSubscribers(listener);
-        if (methodSubscribers != null) {
-            for (val entry : methodSubscribers.asMap().entrySet()) {
-                this.subscribeAll(entry.getKey(), entry.getValue());
-            }
+        if (methodSubscribers == null || methodSubscribers.isEmpty()) {
+            throw new IllegalStateException("Listener " + clazz + " has no subscribable methods");
+        }
+
+        for (val entry : methodSubscribers.asMap().entrySet()) {
+            this.subscribeAll(entry.getKey(), entry.getValue());
         }
     }
 
@@ -100,10 +94,12 @@ public class SubscriberRegistry {
         this.registeredClasses.remove(clazz);
 
         val methodSubscribers = MethodSubscriberUtil.createMethodSubscribers(listener);
-        if (methodSubscribers != null) {
-            for (val entry : methodSubscribers.asMap().entrySet()) {
-                this.unsubscribeAll(entry.getKey(), entry.getValue());
-            }
+        if (methodSubscribers == null || methodSubscribers.isEmpty()) {
+            throw new IllegalStateException("Listener " + clazz + " has no subscribable methods");
+        }
+
+        for (val entry : methodSubscribers.asMap().entrySet()) {
+            this.unsubscribeAll(entry.getKey(), entry.getValue());
         }
     }
 
@@ -114,12 +110,10 @@ public class SubscriberRegistry {
      * @param subscribersToAdd the subscribers to be added
      */
     public <E> void subscribeAll(Class<E> eventType, Collection<EventSubscriber> subscribersToAdd) {
-        var subscribers = this.subscribersMap.get(eventType);
-
-        if (subscribers == null) {
-            val newSet = new CopyOnWriteArrayList<EventSubscriber>();
-            subscribers = MoreObjects.firstNonNull(this.subscribersMap.putIfAbsent(eventType, newSet), newSet);
-        }
+        val subscribers = this.subscribersMap.computeIfAbsent(
+                eventType,
+                key -> new CopyOnWriteArrayList<>()
+        );
 
         subscribers.addAll(subscribersToAdd);
         subscribers.sort(Comparator.comparingInt(EventSubscriber::priority));

@@ -24,6 +24,7 @@ import lombok.experimental.UtilityClass;
 import lombok.val;
 import net.clydo.eventbus.event.Event;
 import net.clydo.eventbus.event.SubscribeEvent;
+import net.clydo.eventbus.exception.InvokeEventException;
 import net.clydo.eventbus.subscriber.EventSubscriber;
 import net.clydo.eventbus.subscriber.impl.MethodSubscriber;
 import org.jetbrains.annotations.NotNull;
@@ -142,12 +143,12 @@ public class EventBus {
     /**
      * Dispatches an event to all subscribers registered for the event's class.
      * Calls the {@link EventSubscriber#call(Object)} method on each subscriber
-     * and checks if the event was cancelled.
+     * and checks if the event was canceled.
      *
      * @param rawEvent the event to be dispatched
-     * @return {@code true} if the event was cancelled, {@code false} otherwise
+     * @return {@code true} if the event was canceled, {@code false} otherwise
      */
-    public boolean call(@NotNull Object rawEvent) {
+    public boolean call(@NotNull Object rawEvent) throws InvokeEventException {
         val iterator = REGISTRY.getSubscribers(rawEvent.getClass());
         if (iterator == null) {
             return false;

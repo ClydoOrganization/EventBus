@@ -20,6 +20,8 @@
 
 package net.clydo.eventbus.subscriber;
 
+import net.clydo.eventbus.exception.InvokeEventException;
+
 /**
  * The {@code EventCaller} interface represents a functional interface
  * for calling an event. It defines a single abstract method, {@code call(E event)},
@@ -35,5 +37,5 @@ public interface EventCaller<E> {
      *
      * @param event the event to be processed
      */
-    void call(E event);
+    void call(E event) throws InvokeEventException;
 }
