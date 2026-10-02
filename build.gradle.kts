@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("java-library")
     id("maven-publish")
+    id("io.freefair.lombok") version "9.7.0"
 }
 
 java {
@@ -13,21 +14,21 @@ java {
     withJavadocJar()
 }
 
+lombok {
+    version = "1.18.42"
+}
+
 repositories {
     maven("https://jitpack.io")
     mavenCentral()
 }
 
 dependencies {
-    listOf(
-        "org.projectlombok:lombok:1.18.42",
-        "org.jetbrains:annotations:26.1.0"
-    ).forEach {
-        compileOnly(it)
-        annotationProcessor(it)
-    }
+    compileOnly("org.jetbrains:annotations:26.1.0")
 
     api("com.github.ClydoOrganization:Clytil:a7cf7ff26c")
+
+    implementation("org.slf4j:slf4j-api:2.0.19")
 }
 
 tasks.javadoc {

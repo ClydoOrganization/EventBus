@@ -20,7 +20,7 @@
 
 package net.clydo.eventbus.internal;
 
-import lombok.CustomLog;
+import lombok.extern.slf4j.Slf4j;
 import net.clydo.eventbus.EventTracer;
 import net.clydo.eventbus.subscriber.Subscription;
 import org.jetbrains.annotations.ApiStatus;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>Not part of the public API; it may change without notice.</p>
  */
 @ApiStatus.Internal
-@CustomLog
+@Slf4j
 public enum LoggingTracer implements EventTracer {
 
     /**
@@ -45,8 +45,8 @@ public enum LoggingTracer implements EventTracer {
             @NotNull final Object event,
             final int subscriberCount
     ) {
-        if (LOGGER.isLoggable(System.Logger.Level.DEBUG)) {
-            LOGGER.log(System.Logger.Level.DEBUG, "Posting {0} to {1} subscriber(s)", event, subscriberCount);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Posting {} to {} subscriber(s)", event, subscriberCount);
         }
     }
 
@@ -56,8 +56,8 @@ public enum LoggingTracer implements EventTracer {
             @NotNull final Subscription subscription,
             final long durationNanos
     ) {
-        if (LOGGER.isLoggable(System.Logger.Level.DEBUG)) {
-            LOGGER.log(System.Logger.Level.DEBUG, "{0} handled {1} in {2} ns", subscription, event, durationNanos);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("{} handled {} in {} ns", subscription, event, durationNanos);
         }
     }
 

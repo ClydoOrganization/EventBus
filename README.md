@@ -24,6 +24,9 @@ dependencies {
 }
 ```
 
+EventBus logs through the SLF4J API. Add any SLF4J provider (Logback, Log4j 2, `slf4j-simple`, …)
+to see its warnings and errors; without one, SLF4J prints a notice and discards the logs.
+
 ## Quick start
 
 ```java
@@ -235,7 +238,7 @@ private final EventBus bus = EventBus.builder()
 
 - **`EventErrorHandler`** receives the exception, the event and the failing `Subscription`, which
   it may unsubscribe. Returning normally continues the dispatch; throwing aborts it. `logging()`
-  logs through `System.Logger` and continues. `rethrowing()` throws an `EventDispatchException`.
+  logs through SLF4J and continues. `rethrowing()` throws an `EventDispatchException`.
   `Error`s always propagate.
 - **`EventTracer`** sees `onPost(event, subscriberCount)`; a count of 0 means a dead event. It
   also sees `onDelivered(event, subscription, durationNanos)` for each invocation.

@@ -61,7 +61,7 @@ public interface EventTracer {
     }
 
     /**
-     * Logs posts and deliveries through {@link System.Logger} at {@code DEBUG} level.
+     * Logs posts and deliveries through SLF4J at {@code DEBUG} level.
      *
      * @return the logging tracer
      */

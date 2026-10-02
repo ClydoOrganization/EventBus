@@ -20,7 +20,7 @@
 
 package net.clydo.eventbus.internal;
 
-import lombok.CustomLog;
+import lombok.extern.slf4j.Slf4j;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.val;
@@ -45,7 +45,7 @@ import java.util.function.Predicate;
  * <p>Nothing here pins classes or listeners beyond their subscriptions: routes are cached by weak
  * class keys, and weakly registered listeners are purged as soon as they are collected.</p>
  */
-@CustomLog
+@Slf4j
 @Accessors(fluent = true)
 final class SubscriberRegistry {
 
@@ -376,9 +376,8 @@ final class SubscriberRegistry {
             return;
         }
 
-        LOGGER.log(
-                System.Logger.Level.WARNING,
-                "{0} has {1} subscriptions, more than the warning threshold of {2}; listeners may be leaking",
+        LOGGER.warn(
+                "{} has {} subscriptions, more than the warning threshold of {}; listeners may be leaking",
                 topic instanceof Class<?> type ? type.getName() : topic,
                 count,
                 this.warningThreshold

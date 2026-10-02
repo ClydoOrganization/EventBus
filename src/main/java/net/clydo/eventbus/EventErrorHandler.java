@@ -49,7 +49,7 @@ public interface EventErrorHandler {
     );
 
     /**
-     * Logs the failure through {@link System.Logger} and continues with the next listener.
+     * Logs the failure through SLF4J at {@code ERROR} level and continues with the next listener.
      * This is the default.
      *
      * @return the logging handler

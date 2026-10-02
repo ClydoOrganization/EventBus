@@ -20,7 +20,7 @@
 
 package net.clydo.eventbus.internal;
 
-import lombok.CustomLog;
+import lombok.extern.slf4j.Slf4j;
 import net.clydo.eventbus.EventDispatchException;
 import net.clydo.eventbus.EventErrorHandler;
 import net.clydo.eventbus.subscriber.Subscription;
@@ -34,36 +34,31 @@ import org.jetbrains.annotations.NotNull;
  * <p>Not part of the public API; it may change without notice.</p>
  */
 @ApiStatus.Internal
-@CustomLog
+@Slf4j
 public enum DefaultErrorHandlers implements EventErrorHandler {
 
     /**
      * Logs the failure and continues with the next listener.
      */
-    LOGGING {
-        @Override
-        public void handle(
-                @NotNull final Exception exception,
-                @NotNull final Object event,
-                @NotNull final Subscription subscription
-        ) {
-            LOGGER.log(System.Logger.Level.ERROR, () -> describe(event, subscription), exception);
-        }
-    },
+    LOGGING,
 
     /**
      * Aborts the dispatch with an {@link EventDispatchException}.
      */
-    RETHROWING {
-        @Override
-        public void handle(
-                @NotNull final Exception exception,
-                @NotNull final Object event,
-                @NotNull final Subscription subscription
-        ) {
+    RETHROWING;
+
+    @Override
+    public void handle(
+            @NotNull final Exception exception,
+            @NotNull final Object event,
+            @NotNull final Subscription subscription
+    ) {
+        if (this == RETHROWING) {
             throw new EventDispatchException(describe(event, subscription), exception);
         }
-    };
+
+        LOGGER.error("{} failed to handle {}", subscription, event.getClass().getName(), exception);
+    }
 
     private static @NotNull String describe(
             @NotNull final Object event,
