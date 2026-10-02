@@ -1,18 +1,20 @@
 plugins {
     id("java")
+    id("java-library")
     id("maven-publish")
 }
 
-group = "net.clydo.eventbus"
-version = "1.0.0"
-
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+
     withSourcesJar()
     withJavadocJar()
 }
 
 repositories {
+    maven("https://jitpack.io")
     mavenCentral()
 }
 
@@ -25,7 +27,7 @@ dependencies {
         annotationProcessor(it)
     }
 
-    implementation("com.google.guava:guava:33.5.0-jre")
+    api("com.github.ClydoOrganization:Clytil:a7cf7ff26c")
 }
 
 tasks.javadoc {
@@ -33,8 +35,8 @@ tasks.javadoc {
 }
 
 tasks.wrapper {
-    gradleVersion = "9.0.0"
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = "9.7.1"
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 publishing {

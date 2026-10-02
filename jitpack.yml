@@ -1,6 +1,2 @@
 jdk:
   - openjdk17
-env:
-  GROUP: net.clydo.eventbus
-  ARTIFACT: EventBus
-  VERSION: 1.0.0

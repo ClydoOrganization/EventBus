@@ -15,68 +15,55 @@
  * along with EventBus. If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2024-2025 ClydoNetwork
+ * Copyright (C) 2024-2026 ClydoNetwork
  */
 
 package net.clydo.eventbus.event;
 
+import lombok.Getter;
+
 /**
- * The {@code Event} class represents a basic event that can be canceled.
- * It determines if the event is cancelable based on the presence of the
- * {@link Cancelable} annotation on the class.
+ * An optional base class for events whose propagation can be stopped.
+ *
+ * <p>Any object can be posted to an {@link net.clydo.eventbus.EventBus}; extending this class
+ * only adds {@link #stopPropagation()}. Stopping propagation is independent of
+ * {@linkplain Cancellable cancellation}: a stopped event is not offered to any further listener,
+ * while a canceled event still is, and only signals the poster not to carry out the action.</p>
+ *
+ * <p>Events are not thread-safe. They should be mutated only by synchronous listeners.</p>
+ *
+ * @see CancellableEvent
  */
-public class Event {
+public abstract class Event {
 
     /**
-     * Indicates whether this event can be canceled.
+     * Whether a listener has stopped this event's propagation.
      */
-    private final boolean cancelable;
+    @Getter
+    private boolean propagationStopped;
 
     /**
-     * Tracks whether this event has been canceled.
+     * Prevents listeners after the current one from receiving this event. It stays stopped until
+     * {@link #reset()}.
      */
-    private boolean cancelled;
-
-    /**
-     * Constructs a new {@code Event}. The cancelable status is determined
-     * by checking for the presence of the {@link Cancelable} annotation on the class.
-     */
-    public Event() {
-        this.cancelable = this.getClass().isAnnotationPresent(Cancelable.class);
+    public void stopPropagation() {
+        this.propagationStopped = true;
     }
 
     /**
-     * Cancels the event if it is cancelable.
-     * Sets the {@code cancelled} flag to {@code true}.
-     */
-    public void cancel() {
-        this.cancelled = true;
-    }
-
-    /**
-     * Resume the event by setting the {@code cancelled} flag to {@code false}.
-     * This allows the event to proceed even if it was previously canceled.
-     */
-    public void resume() {
-        this.cancelled = false;
-    }
-
-    /**
-     * Determines whether the event is cancelable.
+     * Clears the dispatch state so this instance can be posted again. Hot paths, such as a render
+     * loop posting one event per frame, can reuse a single instance instead of allocating:
+     * <pre>{@code
+     * this.frameEvent.reset();
+     * this.frameEvent.setPartialTick(partialTick);
+     * bus.post(this.frameEvent);
+     * }</pre>
      *
-     * @return {@code true} if the event can be canceled, {@code false} otherwise.
+     * <p>Subclasses that add their own per-dispatch state should override this and call
+     * {@code super.reset()}.</p>
      */
-    public boolean cancelable() {
-        return this.cancelable;
+    public void reset() {
+        this.propagationStopped = false;
     }
 
-    /**
-     * Checks whether the event has been canceled. This will return {@code true}
-     * only if the event is both cancelable and has been canceled.
-     *
-     * @return {@code true} if the event has been canceled, {@code false} otherwise.
-     */
-    public boolean cancelled() {
-        return this.cancelable() && this.cancelled;
-    }
 }

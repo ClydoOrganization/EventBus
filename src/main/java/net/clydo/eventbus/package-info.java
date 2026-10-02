@@ -15,27 +15,19 @@
  * along with EventBus. If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2024-2025 ClydoNetwork
+ * Copyright (C) 2024-2026 ClydoNetwork
  */
-
-package net.clydo.eventbus.subscriber;
-
-import net.clydo.eventbus.exception.InvokeEventException;
 
 /**
- * The {@code EventCaller} interface represents a functional interface
- * for calling an event. It defines a single abstract method, {@code call(E event)},
- * which allows an event to be processed.
+ * A small, fast, type-safe publish/subscribe event bus.
  *
- * @param <E> the type of event to be processed
+ * <p>{@link net.clydo.eventbus.EventBus} is the entry point. It is configured with an
+ * {@link net.clydo.eventbus.EventErrorHandler} and an optional {@link net.clydo.eventbus.EventTracer}.
+ *
+ * <ul>
+ *   <li>{@link net.clydo.eventbus.event} &mdash; the event model: base classes, cancellation and keys.</li>
+ *   <li>{@link net.clydo.eventbus.subscriber} &mdash; subscribing: listeners, annotations, options and
+ *   subscription handles.</li>
+ * </ul>
  */
-@FunctionalInterface
-public interface EventCaller<E> {
-
-    /**
-     * Processes the given event.
-     *
-     * @param event the event to be processed
-     */
-    void call(E event) throws InvokeEventException;
-}
+package net.clydo.eventbus;

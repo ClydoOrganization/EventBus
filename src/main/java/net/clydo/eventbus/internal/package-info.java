@@ -15,13 +15,16 @@
  * along with EventBus. If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2024-2025 ClydoNetwork
+ * Copyright (C) 2024-2026 ClydoNetwork
  */
 
-package net.clydo.eventbus.exception;
+/**
+ * The implementation behind {@link net.clydo.eventbus.EventBus}.
+ *
+ * <p>Not part of the public API. Types here are public only so the API packages can reach them, and
+ * may change without notice.</p>
+ */
+@ApiStatus.Internal
+package net.clydo.eventbus.internal;
 
-import lombok.experimental.StandardException;
-
-@StandardException
-public class InvokeEventException extends Exception {
-}
+import org.jetbrains.annotations.ApiStatus;
